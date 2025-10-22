@@ -81,16 +81,24 @@ export default function AboutPage() {
         <h2 className="text-2xl font-semibold">Leadership</h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { name: "Esther Gina Bart-Plange", role: "CEO" },
-            { name: "Operations Lead", role: "Operations" },
-            { name: "Commercial Lead", role: "Commercial" },
-          ].map((m) => (
-            <div key={m.name} className="rounded-lg border border-[var(--color-muted)] bg-white p-6">
-              <div className="h-24 w-24 rounded-full bg-[var(--color-muted)]"></div>
-              <div className="mt-4 text-base font-semibold">{m.name}</div>
-              <div className="text-sm text-[var(--color-muted-foreground)]">{m.role}</div>
-            </div>
-          ))}
+            { name: "Raphael Dzifa Heloo", role: "Proprietor & CEO", href: "/ceo" },
+            { name: "Operations Lead", role: "Operations", href: null },
+            { name: "Commercial Lead", role: "Commercial", href: null },
+          ].map((m) => {
+            const Component = m.href ? "a" : "div";
+            return (
+              <Component 
+                key={m.name} 
+                href={m.href || undefined}
+                className={`rounded-lg border border-[var(--color-muted)] bg-white p-6 ${m.href ? 'hover:shadow-md hover:border-[var(--color-primary)]/30 transition-all cursor-pointer' : ''}`}
+              >
+                <div className="h-24 w-24 rounded-full bg-[var(--color-muted)]"></div>
+                <div className="mt-4 text-base font-semibold">{m.name}</div>
+                <div className="text-sm text-[var(--color-muted-foreground)]">{m.role}</div>
+                {m.href && <div className="mt-2 text-xs font-medium text-[var(--color-primary)]">View Profile →</div>}
+              </Component>
+            );
+          })}
         </div>
       </div>
 
