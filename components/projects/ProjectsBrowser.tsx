@@ -1,9 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Building2, Package, Truck, Globe2, ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import { PROJECTS, getProjectsByCategory, type ProjectCategory } from '@/lib/projects';
 
-const CATEGORIES = [
+const CATEGORIES: (ProjectCategory | 'All')[] = [
   'All',
   'Construction',
   'Procurement',
@@ -11,21 +13,10 @@ const CATEGORIES = [
   'Import/Export',
 ] as const;
 
-const PROJECTS = [
-  { id: 1, title: 'Municipal Road Upgrade', category: 'Construction', location: 'Kumasi', icon: Building2 },
-  { id: 2, title: 'Hospital Wing Renovation', category: 'Construction', location: 'Accra', icon: Building2 },
-  { id: 3, title: 'Water Treatment Equipment', category: 'Procurement', location: 'Cape Coast', icon: Package },
-  { id: 4, title: 'School Supplies Framework', category: 'Procurement', location: 'Tema', icon: Package },
-  { id: 5, title: 'Bulk Haulage (Cement)', category: 'Transportation', location: 'Takoradi', icon: Truck },
-  { id: 6, title: 'Last-Mile Distribution', category: 'Transportation', location: 'Tamale', icon: Truck },
-  { id: 7, title: 'Agri Commodities Export', category: 'Import/Export', location: 'Ghana → ECOWAS', icon: Globe2 },
-  { id: 8, title: 'Machinery Import', category: 'Import/Export', location: 'EU → Ghana', icon: Globe2 },
-] as const;
-
 export default function ProjectsBrowser() {
   const [active, setActive] = useState<(typeof CATEGORIES)[number]>('All');
   const filtered = useMemo(
-    () => (active === 'All' ? PROJECTS : PROJECTS.filter((p) => p.category === active)),
+    () => getProjectsByCategory(active),
     [active]
   );
 
@@ -52,24 +43,42 @@ export default function ProjectsBrowser() {
         {filtered.map((p) => {
           const Icon = p.icon;
           return (
-            <div
+            <Link
               key={p.id}
-              className="group rounded-lg border border-[var(--color-muted)] bg-white p-6 shadow-sm transition-transform hover:translate-y-[-2px]"
+              href={`/projects/${p.id}`}
+              className="group block rounded-lg border border-[var(--color-muted)] bg-white shadow-sm transition-all hover:translate-y-[-2px] hover:shadow-md"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-[var(--color-primary)]">
-                  <Icon />
+              {/* Image Placeholder */}
+              <div className="relative aspect-video overflow-hidden rounded-t-lg bg-gradient-to-br from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Icon className="h-12 w-12 text-[var(--color-primary)]/30" />
                 </div>
-                <span className="rounded bg-[var(--color-muted)] px-2 py-0.5 text-xs text-[var(--color-foreground)]">
-                  {p.category}
-                </span>
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(30,58,138,0.1),_transparent_70%)]" />
+                <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/5 to-transparent" />
               </div>
-              <h3 className="mt-3 text-lg font-semibold text-[var(--color-foreground)]">{p.title}</h3>
-              <p className="text-sm text-[var(--color-muted-foreground)]">{p.location}</p>
-              <div className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-[var(--color-primary)]">
-                View details <ArrowUpRight size={16} />
+              
+              {/* Content */}
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2 text-[var(--color-primary)]">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="rounded bg-[var(--color-muted)] px-2 py-0.5 text-xs font-medium text-[var(--color-foreground)]">
+                    {p.category}
+                  </span>
+                </div>
+                <h3 className="text-lg font-semibold text-[var(--color-foreground)] group-hover:text-[var(--color-primary)] transition-colors">
+                  {p.title}
+                </h3>
+                <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">{p.location}</p>
+                <p className="mt-2 text-sm text-[var(--color-muted-foreground)] line-clamp-2">
+                  {p.description}
+                </p>
+                <div className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] group-hover:gap-2 transition-all">
+                  View details <ArrowUpRight size={16} />
+                </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
